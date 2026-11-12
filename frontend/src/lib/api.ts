@@ -1,5 +1,7 @@
-const IDENTITY = process.env.NEXT_PUBLIC_IDENTITY_API ?? "http://localhost:8000/api/v1";
-const BALLOT = process.env.NEXT_PUBLIC_BALLOT_API ?? "http://localhost:8001/api/v1";
+// In Vercel Services both APIs share the frontend's origin and are routed by
+// the root vercel.json. Local standalone development can override these URLs.
+const IDENTITY = process.env.NEXT_PUBLIC_IDENTITY_API ?? "/api/v1";
+const BALLOT = process.env.NEXT_PUBLIC_BALLOT_API ?? "/api/v1";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }

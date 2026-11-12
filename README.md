@@ -41,6 +41,5 @@ cd backend && pytest -q      # TEST_KEY_BITS / KEY_BITS=2048 is set automaticall
 ```
 
 ## Production
-See `docs/deployment.md`. Use Alembic (`alembic -c alembic_identity.ini revision --autogenerate -m init`, then
+See `docs/deployment-vercel-services.md` for the current Vercel Services configuration and its important secret-isolation caveat. Use Alembic (`alembic -c alembic_identity.ini revision --autogenerate -m init`, then
 `upgrade head`; same for `alembic_ballot.ini`) instead of `init_db`, and apply `backend/sql/anon_roles.sql`.
-# hidden

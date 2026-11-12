@@ -58,6 +58,9 @@ def claim_credential(db: Session, settings: Settings, student_id: uuid.UUID, cam
                 EligibilityCredential.expires_at > now,
             )
             .values(issued_on=now.date(), blinded_hash=h)
+            # The row is checked atomically by the database. Avoid SQLAlchemy's
+            # Python-side evaluator comparing SQLite's naive datetimes with UTC.
+            .execution_options(synchronize_session=False)
         )
         db.commit()
         if res.rowcount == 1:

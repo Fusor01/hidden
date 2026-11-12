@@ -1,0 +1,79 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "nextjs"
+    },
+    "identity": {
+      "root": "backend",
+      "framework": "fastapi",
+      "entrypoint": "identity_api.main:app",
+      "functions": {
+        "identity_api/main.py": {
+          "maxDuration": 60
+        }
+      }
+    },
+    "ballot": {
+      "root": "backend",
+      "framework": "fastapi",
+      "entrypoint": "ballot_api.main:app",
+      "functions": {
+        "ballot_api/main.py": {
+          "maxDuration": 60
+        }
+      }
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/v1/campaigns/(.*)",
+      "destination": {
+        "service": "ballot"
+      }
+    },
+    {
+      "source": "/api/v1/auth/(.*)",
+      "destination": {
+        "service": "identity"
+      }
+    },
+    {
+      "source": "/api/v1/student/(.*)",
+      "destination": {
+        "service": "identity"
+      }
+    },
+    {
+      "source": "/api/v1/faculty/(.*)",
+      "destination": {
+        "service": "identity"
+      }
+    },
+    {
+      "source": "/api/v1/admin/(.*)",
+      "destination": {
+        "service": "identity"
+      }
+    },
+    {
+      "source": "/api/v1/internal/(.*)",
+      "destination": {
+        "service": "identity"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "frontend"
+      }
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/internal/close-expired",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

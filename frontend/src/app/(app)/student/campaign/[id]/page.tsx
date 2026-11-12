@@ -11,6 +11,10 @@ import { Button, Card, ErrorState, Loading, cx, useToast } from "@/components/ui
 import { useLoad } from "@/components/use-load";
 
 type Ans = { value?: number; option_ids?: string[]; text?: string };
+type SubmissionAnswer =
+  | { question_id: string; text: string }
+  | { question_id: string; option_ids: string[] }
+  | { question_id: string; value: number };
 
 export default function Submit() {
   const { id } = useParams<{ id: string }>();
@@ -41,11 +45,21 @@ export default function Submit() {
   async function send() {
     if (!c) return;
     setFormErr(null);
-    const answers = c.questions.flatMap((q) => {
+    const answers = c.questions.flatMap<SubmissionAnswer>((q): SubmissionAnswer[] => {
       const a = ans[q.id];
-      if (q.type === "text") return a?.text?.trim() ? [{ question_id: q.id, text: a.text.trim() }] : [];
-      if (q.type === "single" || q.type === "multi") return a?.option_ids?.length ? [{ question_id: q.id, option_ids: a.option_ids }] : [];
-      return a?.value ? [{ question_id: q.id, value: a.value }] : [];
+      if (q.type === "text") {
+        return a?.text?.trim()
+          ? [{ question_id: q.id, text: a.text.trim() }]
+          : [];
+      }
+      if (q.type === "single" || q.type === "multi") {
+        return a?.option_ids?.length
+          ? [{ question_id: q.id, option_ids: a.option_ids }]
+          : [];
+      }
+      return a?.value !== undefined
+        ? [{ question_id: q.id, value: a.value }]
+        : [];
     });
     const missing = c.questions.filter((q) => q.required && !answers.some((x) => x.question_id === q.id));
     if (missing.length) { setFormErr(`Please answer: ${missing.map((q) => q.prompt).join("; ")}`); return; }

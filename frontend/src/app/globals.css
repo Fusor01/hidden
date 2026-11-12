@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root { color-scheme: light; }
-body { @apply bg-paper text-ink antialiased; font-feature-settings: "cv11", "ss01"; }
-h1, h2, h3 { @apply tracking-tight text-navy-900; }
-:focus-visible { @apply outline-2 outline-offset-2 outline-indigo-600; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

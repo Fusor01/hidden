@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "db:setup": "node scripts/setup-db.mjs",
     "db:seed": "node scripts/seed.mjs",
+    "db:demo": "node scripts/apply-demo.mjs",
     "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {

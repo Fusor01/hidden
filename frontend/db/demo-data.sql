@@ -30,7 +30,12 @@ INSERT INTO users (email, password_hash, role) VALUES
    '$argon2id$v=19$m=65536,t=3,p=4$+3st8xq1AvyL+8WcmLLnBg$e0Ne99V83cJEyW5VLBH2uSfCef6mSPK7t0nPQVOSxVI', 'student'),
   ('student4@college.edu',
    '$argon2id$v=19$m=65536,t=3,p=4$hXTvcexmXksnSyxRNv92dQ$iGlBmMoTJju2Lnq4ot8/OzIprL2t1O8nLn0S/vE8LGU', 'student')
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE
+SET password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role,
+    is_active = true,
+    failed_logins = 0,
+    locked_until = NULL;
 
 INSERT INTO faculty (user_id, employee_no, name, department)
 SELECT id, 'FAC001', 'Dr. Ademo Faculty', 'Computer Science'

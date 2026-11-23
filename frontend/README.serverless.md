@@ -101,7 +101,7 @@ $env:DEMO_SLOWMO="600"                      # even slower Playwright actions (de
 npm run demo
 ```
 
-The browser stays open on the results page until you press Enter. Set `DEMO_HOLD=0` to close it automatically. Each run creates a new campaign, so you can repeat it safely.
+The browser opens **maximised** and the page uses the real window size, so nothing is clipped or squeezed by a fixed emulated viewport. It stays open on the results page until you press Enter. Set `DEMO_HOLD=0` to close it automatically. Each run creates a new campaign, so you can repeat it safely.
 
 Demo accounts (all students use `StudentDemo123!`; admin is `admin@college.edu` / `AdminDemo123!`) are defined in `db/demo-data.sql`.
 

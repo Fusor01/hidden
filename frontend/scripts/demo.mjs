@@ -163,9 +163,15 @@ async function submitFeedback(page, campaignId, index, email) {
 }
 
 async function main() {
-  const browser = await chromium.launch({ headless, slowMo });
+  // Headed mode: start maximised and let the page use the real window size.
+  // A fixed emulated viewport caused the UI to be clipped/scrolled inside a smaller window.
+  const browser = await chromium.launch({
+    headless,
+    slowMo,
+    args: ["--start-maximized", "--window-position=0,0", "--window-size=1600,1000"],
+  });
   try {
-    const context = await browser.newContext({ baseURL: base, viewport: { width: 1280, height: 900 } });
+    const context = await browser.newContext({ baseURL: base, viewport: null });
     const page = await context.newPage();
     const campaignId = await setup(context);
 

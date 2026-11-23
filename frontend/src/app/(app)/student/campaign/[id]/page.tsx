@@ -6,7 +6,7 @@ import { CheckCircle2, Star } from "lucide-react";
 import { api, ApiError, ballot } from "@/lib/api";
 import { importPublicKey, prepare, unblind } from "@/lib/blind";
 import { loadLocal, saveLocal, type LocalCred } from "@/lib/local-state";
-import type { CampaignDetail } from "@/lib/types";
+import type { CampaignDetail, Me } from "@/lib/types";
 import { Button, Card, ErrorState, Loading, cx, useToast } from "@/components/ui";
 import { useLoad } from "@/components/use-load";
 
@@ -20,6 +20,9 @@ export default function Submit() {
   const { id } = useParams<{ id: string }>();
   const toast = useToast();
   const { data: c, error, loading } = useLoad(() => api<CampaignDetail>(`/student/campaigns/${id}`), [id]);
+  const { data: me, error: meError } = useLoad(() => api<Me>("/auth/me"), []);
+  // Credentials are browser-local but must never be shared between accounts on a shared machine.
+  const localKey = me ? `${me.id}:${id}` : null;
   const [local, setLocal] = useState<LocalCred | null>(null);
   const [ans, setAns] = useState<Record<string, Ans>>({});
   const [delay, setDelay] = useState(false);
@@ -27,9 +30,14 @@ export default function Submit() {
   const [msg, setMsg] = useState<string | null>(null);
   const [formErr, setFormErr] = useState<string | null>(null);
 
-  useEffect(() => { void loadLocal(id).then(setLocal); }, [id]);
-  if (loading || !local) return <Loading />;
+  useEffect(() => {
+    setLocal(null);
+    if (localKey) void loadLocal(localKey).then(setLocal);
+  }, [localKey]);
+  if (meError) return <ErrorState message={meError} />;
+  if (loading || !me || !localKey || !local) return <Loading />;
   if (error || !c) return <ErrorState message={error ?? "This campaign is not available."} />;
+  const scopeKey: string = localKey;
 
   if (local.submitted) return (
     <Card className="mx-auto max-w-lg text-center">
@@ -70,11 +78,11 @@ export default function Submit() {
       let cur: LocalCred = local ?? {};
       // 1. Obtain the credential. Prepared state is saved BEFORE the request so a retry reuses it.
       if (!cur.signature) {
-        if (!cur.prepared) { cur = { ...cur, prepared: await prepare(c.id, pub) }; await saveLocal(c.id, cur); }
+        if (!cur.prepared) { cur = { ...cur, prepared: await prepare(c.id, pub) }; await saveLocal(scopeKey, cur); }
         setMsg("Getting your anonymous pass…");
         const r = await api<{ blind_sig: string }>(`/student/campaigns/${c.id}/credential`, { method: "POST", json: { blinded_msg: cur.prepared!.blindedMsg } });
         cur = { ...cur, signature: await unblind(c.id, pub, cur.prepared!, r.blind_sig) };
-        await saveLocal(c.id, cur); setLocal(cur);
+        await saveLocal(scopeKey, cur); setLocal(cur);
       }
       // 2. Optional random wait so submission time is less tied to the moment you claimed the pass.
       if (delay) { const s = 20 + Math.floor(Math.random() * 100); for (let i = s; i > 0; i--) { setMsg(`Submitting in ${i}s. Keep this page open.`); await new Promise((r) => setTimeout(r, 1000)); } }
@@ -84,7 +92,7 @@ export default function Submit() {
         await ballot(`/campaigns/${c.id}/submit`, { key_id: c.key_id, token: cur.prepared!.token, signature: cur.signature, answers });
       } catch (e) { if (!(e instanceof ApiError && e.status === 409)) throw e; }
       const done = { ...cur, submitted: true };
-      await saveLocal(c.id, done); setLocal(done);
+      await saveLocal(scopeKey, done); setLocal(done);
     } catch (e) {
       toast("err", e instanceof Error ? e.message : "Submission failed");
       setFormErr(e instanceof ApiError && e.status === 409 && !local?.signature

@@ -1,15 +1,11 @@
 import pg from "pg";
 import { hash } from "@node-rs/argon2";
+import { parseArgs } from "./args.mjs";
 import { dbConfig, loadEnv } from "./env.mjs";
 
 loadEnv();
 
-const args = Object.fromEntries(
-  process.argv.slice(2).map((a) => {
-    const i = a.indexOf("=");
-    return i < 0 ? [a.replace(/^--/, ""), "true"] : [a.slice(0, i).replace(/^--/, ""), a.slice(i + 1)];
-  })
-);
+const args = parseArgs(process.argv.slice(2));
 
 const adminEmail = (args["admin-email"] ?? "admin@college.edu").trim().toLowerCase();
 const adminPassword = args["admin-password"] ?? "ChangeMe123!";

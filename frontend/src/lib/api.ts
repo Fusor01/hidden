@@ -1,7 +1,5 @@
-// In Vercel Services both APIs share the frontend's origin and are routed by
-// the root vercel.json. Local standalone development can override these URLs.
-const IDENTITY = process.env.NEXT_PUBLIC_IDENTITY_API ?? "/api/v1";
-const BALLOT = process.env.NEXT_PUBLIC_BALLOT_API ?? "/api/v1";
+// The API is served by this same Next.js deployment.
+const API = "/api/v1";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -20,7 +18,7 @@ async function parse<T>(res: Response): Promise<T> {
 /** Identity API: cookie session. */
 export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
   const { json, ...rest } = init;
-  const res = await fetch(IDENTITY + path, {
+  const res = await fetch(API + path, {
     ...rest,
     credentials: "include",
     headers: { "Content-Type": "application/json", ...(rest.headers ?? {}) },
@@ -31,7 +29,7 @@ export async function api<T>(path: string, init: RequestInit & { json?: unknown 
 
 /** Ballot API: NEVER sends cookies. This is what keeps the ballot separate from the session. */
 export async function ballot<T>(path: string, json?: unknown): Promise<T> {
-  const res = await fetch(BALLOT + path, {
+  const res = await fetch(API + path, {
     method: json !== undefined ? "POST" : "GET",
     credentials: "omit",
     referrerPolicy: "no-referrer",

@@ -55,6 +55,17 @@ Healthy results:
 - `/api/v1/health` → `200 {"ok":true}`
 - `/api/v1/auth/me` → `401 {"detail":"Not authenticated"}`
 - `/api/v1/auth/definitely-not-a-route` → `404 {"detail":"Not Found"}`
+
+## Blind signature check
+
+Runs the browser's `@cloudflare/blindrsa-ts` suite against the server's signer and
+verifier. If this fails, submissions will return `Invalid credential` even with a
+correctly issued pass. Run it after changing either `src/lib/blind.ts` or
+`src/server/crypto.ts`:
+
+```bash
+npm run test:blind
+```
 - `/api/v1/campaigns/definitely-not-a-route` → `404 {"detail":"Not Found"}`
 
 ## Security note

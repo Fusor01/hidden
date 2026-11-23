@@ -13,6 +13,9 @@ import {
 
 // RFC 9474, RSABSSA-SHA384-PSS-Deterministic. The browser uses blindrsa-ts;
 // this module implements only the server side (issuer sign + verifier verify).
+// That suite uses a PSS salt of hLen = 48 bytes (SHA-384), NOT the PSSZERO
+// variant's zero salt. This must stay in sync with src/lib/blind.ts.
+const PSS_SALT_LENGTH = 48;
 
 export const b64uEncode = (bytes: Uint8Array): string => Buffer.from(bytes).toString("base64url");
 
@@ -156,7 +159,7 @@ export function verifySignature(publicDer: Uint8Array, message: Uint8Array, sign
     return nodeVerify(
       "sha384",
       Buffer.from(message),
-      { key, padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: 0 },
+      { key, padding: constants.RSA_PKCS1_PSS_PADDING, saltLength: PSS_SALT_LENGTH },
       Buffer.from(signature)
     );
   } catch {

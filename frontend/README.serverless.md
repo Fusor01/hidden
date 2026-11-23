@@ -66,7 +66,44 @@ correctly issued pass. Run it after changing either `src/lib/blind.ts` or
 ```bash
 npm run test:blind
 ```
-- `/api/v1/campaigns/definitely-not-a-route` → `404 {"detail":"Not Found"}`
+
+## Live presentation demo (Playwright)
+
+`scripts/demo.mjs` drives the whole project in a real browser while you present:
+
+1. signs in as admin and creates a fresh campaign with 5 question types (star, single choice, numeric, multiple choice, text),
+2. sets a 10-student roster, opens the campaign,
+3. signs in each of `student1@college.edu` … `student10@college.edu` in turn, answers the questions, claims a blind signature and submits,
+4. closes the campaign and leaves the browser on the anonymous results page with charts and comments.
+
+One-time setup on the presentation computer:
+
+```bash
+cd frontend
+npm install
+npm run demo:install     # downloads the Chromium browser
+npm run db:demo          # ensures the 10 demo students exist in the DB
+```
+
+Then, with the app reachable at `DEMO_BASE_URL` (default: the deployed Vercel URL):
+
+```bash
+npm run demo
+```
+
+Useful options (PowerShell syntax):
+
+```powershell
+$env:DEMO_BASE_URL="http://localhost:3000"  # local dev; set APP_ORIGIN to the same value
+$env:DEMO_HEADLESS="1"                      # hide the browser window
+$env:DEMO_PAUSE="1500"                      # slow down between students
+$env:DEMO_SLOWMO="300"                      # slow down all Playwright actions
+npm run demo
+```
+
+The browser stays open on the results page until you press Enter. Set `DEMO_HOLD=0` to close it automatically. Each run creates a new campaign, so you can repeat it safely.
+
+Demo accounts (all students use `StudentDemo123!`; admin is `admin@college.edu` / `AdminDemo123!`) are defined in `db/demo-data.sql`.
 
 ## Security note
 

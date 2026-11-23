@@ -9,6 +9,7 @@
 --   student2@college.edu  / StudentDemo123!
 --   student3@college.edu  / StudentDemo123!
 --   student4@college.edu  / StudentDemo123!
+--   student5@college.edu  / StudentDemo123!  (through student10@college.edu)
 --
 -- User IDs are looked up by email, so this works even if those accounts already exist.
 -- The campaign is created as a draft. After running this, log in as admin and open it
@@ -29,7 +30,19 @@ INSERT INTO users (email, password_hash, role) VALUES
   ('student3@college.edu',
    '$argon2id$v=19$m=65536,t=3,p=4$+3st8xq1AvyL+8WcmLLnBg$e0Ne99V83cJEyW5VLBH2uSfCef6mSPK7t0nPQVOSxVI', 'student'),
   ('student4@college.edu',
-   '$argon2id$v=19$m=65536,t=3,p=4$hXTvcexmXksnSyxRNv92dQ$iGlBmMoTJju2Lnq4ot8/OzIprL2t1O8nLn0S/vE8LGU', 'student')
+   '$argon2id$v=19$m=65536,t=3,p=4$hXTvcexmXksnSyxRNv92dQ$iGlBmMoTJju2Lnq4ot8/OzIprL2t1O8nLn0S/vE8LGU', 'student'),
+  ('student5@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$kNqjPDZfx0wskwKkvy+BFg$kpU4bQcLWM8D/PQo5UI8q74iUcsSxZqxbuR6t5IZfYI', 'student'),
+  ('student6@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$bScTW1gi4VGChuAbrjv37w$ezZ+HnTu1+cfTXIL0KOlyajpACbQ4AZ6CF1RlYGYjZo', 'student'),
+  ('student7@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$F6AiLGWur38RrrTDQPtkbw$icPZAg0tcAmAX+Ir4TRaaMD5GDwTca44PUn9sCr4QvY', 'student'),
+  ('student8@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$5Rt3WhZW3pog14098ghTSQ$Ea1fLGlw8HH/5aNhX/CibTokSOotO5hIQbSoNG95XLg', 'student'),
+  ('student9@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$ydglWM+4RoJZWw6ktpzWVw$c2adcQgDLW0PnnquSdVB4NnXCZ+cudbGIhiSDoAy+ig', 'student'),
+  ('student10@college.edu',
+   '$argon2id$v=19$m=65536,t=3,p=4$q03CJTp7Ru1PjCzt6+iBZw$vOoGLFpfyHuvPDlqW2joxWivTWr8FXT4gLQteRF1dtI', 'student')
 ON CONFLICT (email) DO UPDATE
 SET password_hash = EXCLUDED.password_hash,
     role = EXCLUDED.role,
@@ -49,16 +62,30 @@ SELECT id,
          WHEN 'student2@college.edu' THEN '2024002'
          WHEN 'student3@college.edu' THEN '2024003'
          WHEN 'student4@college.edu' THEN '2024004'
+         WHEN 'student5@college.edu' THEN '2024005'
+         WHEN 'student6@college.edu' THEN '2024006'
+         WHEN 'student7@college.edu' THEN '2024007'
+         WHEN 'student8@college.edu' THEN '2024008'
+         WHEN 'student9@college.edu' THEN '2024009'
+         WHEN 'student10@college.edu' THEN '2024010'
        END,
        CASE email
          WHEN 'student1@college.edu' THEN 'Alice Student'
          WHEN 'student2@college.edu' THEN 'Bob Student'
          WHEN 'student3@college.edu' THEN 'Carol Student'
          WHEN 'student4@college.edu' THEN 'Dave Student'
+         WHEN 'student5@college.edu' THEN 'Eve Student'
+         WHEN 'student6@college.edu' THEN 'Frank Student'
+         WHEN 'student7@college.edu' THEN 'Grace Student'
+         WHEN 'student8@college.edu' THEN 'Heidi Student'
+         WHEN 'student9@college.edu' THEN 'Ivan Student'
+         WHEN 'student10@college.edu' THEN 'Judy Student'
        END,
        'Computer Science', 2026
 FROM users
-WHERE email IN ('student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu')
+WHERE email IN ('student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu',
+                'student5@college.edu','student6@college.edu','student7@college.edu','student8@college.edu',
+                'student9@college.edu','student10@college.edu')
 ON CONFLICT (user_id) DO NOTHING;
 
 -- ---------------------------------------------------------------------------
@@ -134,7 +161,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO campaign_eligibility (campaign_id, student_id)
 SELECT 'd0000000-0000-4000-8000-000000000001'::uuid, id
-FROM users WHERE email IN ('student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu')
+FROM users WHERE email IN ('student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu',
+                'student5@college.edu','student6@college.edu','student7@college.edu','student8@college.edu',
+                'student9@college.edu','student10@college.edu')
 ON CONFLICT DO NOTHING;
 
 -- ---------------------------------------------------------------------------
@@ -160,4 +189,6 @@ ON CONFLICT DO NOTHING;
 -- DELETE FROM audit_logs WHERE actor_user_id IN (SELECT id FROM users WHERE email LIKE '%@college.edu');
 -- DELETE FROM users WHERE email IN (
 --   'admin@college.edu','faculty@college.edu',
---   'student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu');
+--   'student1@college.edu','student2@college.edu','student3@college.edu','student4@college.edu',
+--   'student5@college.edu','student6@college.edu','student7@college.edu','student8@college.edu',
+--   'student9@college.edu','student10@college.edu');

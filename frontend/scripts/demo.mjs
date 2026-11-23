@@ -7,7 +7,7 @@
 // Useful environment variables:
 //   DEMO_BASE_URL=https://hidden-sigma-ten.vercel.app
 //   DEMO_HEADLESS=1        hide the browser window
-//   DEMO_SLOWMO=250        slow down Playwright actions (ms) so the audience can follow
+//   DEMO_SLOWMO=1500        slow down Playwright actions (ms) so the audience can follow
 //   DEMO_PAUSE=600         pause between students (ms)
 //   DEMO_HOLD=0            close the browser as soon as the demo finishes
 
@@ -15,8 +15,9 @@ import { chromium } from "playwright";
 
 const base = (process.env.DEMO_BASE_URL ?? "https://hidden-sigma-ten.vercel.app").replace(/\/$/, "");
 const headless = /^(1|true|yes)$/i.test(process.env.DEMO_HEADLESS ?? "");
-const slowMo = Number(process.env.DEMO_SLOWMO ?? 180);
-const pause = Number(process.env.DEMO_PAUSE ?? 600);
+// Deliberately slow defaults so a live audience can follow every click.
+const slowMo = Number(process.env.DEMO_SLOWMO ?? 400);
+const pause = Number(process.env.DEMO_PAUSE ?? 1500);
 const hold = !/^(0|false|no)$/i.test(process.env.DEMO_HOLD ?? "1");
 const adminEmail = process.env.DEMO_ADMIN_EMAIL ?? "admin@college.edu";
 const adminPassword = process.env.DEMO_ADMIN_PASSWORD ?? "AdminDemo123!";

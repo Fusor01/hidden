@@ -96,8 +96,8 @@ Useful options (PowerShell syntax):
 ```powershell
 $env:DEMO_BASE_URL="http://localhost:3000"  # local dev; set APP_ORIGIN to the same value
 $env:DEMO_HEADLESS="1"                      # hide the browser window
-$env:DEMO_PAUSE="1500"                      # slow down between students
-$env:DEMO_SLOWMO="300"                      # slow down all Playwright actions
+$env:DEMO_PAUSE="3000"                      # even slower between students (default 1500)
+$env:DEMO_SLOWMO="600"                      # even slower Playwright actions (default 400)
 npm run demo
 ```
 
